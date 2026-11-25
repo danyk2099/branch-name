@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "Jira Branch Name",
+  "short_name": "Branch Name",
+  "version": "1.0.0",
+  "description": "Turns the current Jira issue into a clean git branch name and copies it to the clipboard.",
+  "minimum_chrome_version": "102",
+  "permissions": ["activeTab", "scripting", "storage", "clipboardWrite"],
+  "optional_host_permissions": [
+    "https://api-free.deepl.com/*",
+    "https://api.deepl.com/*",
+    "https://translation.googleapis.com/*",
+    "https://api.cognitive.microsofttranslator.com/*"
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "Copy branch name for this Jira issue",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": { "default": "Alt+Shift+B" },
+      "description": "Open the branch name popup"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Branch Name</title>
+  <link rel="stylesheet" href="../styles/common.css">
+  <link rel="stylesheet" href="popup.css">
+  <script type="module" src="popup.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Branch name</h1>
+    <button id="open-options" class="icon-button" type="button" title="Settings" aria-label="Settings">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M19.4 13a7.5 7.5 0 0 0 0-2l2-1.6a.5.5 0 0 0 .1-.6l-1.9-3.3a.5.5 0 0 0-.6-.2l-2.4 1a7.3 7.3 0 0 0-1.7-1l-.4-2.6a.5.5 0 0 0-.5-.4h-3.8a.5.5 0 0 0-.5.4l-.4 2.6a7.3 7.3 0 0 0-1.7 1l-2.4-1a.5.5 0 0 0-.6.2L2.5 8.8a.5.5 0 0 0 .1.6l2 1.6a7.5 7.5 0 0 0 0 2l-2 1.6a.5.5 0 0 0-.1.6l1.9 3.3c.1.2.4.3.6.2l2.4-1c.5.4 1.1.7 1.7 1l.4 2.6c0 .2.3.4.5.4h3.8c.2 0 .5-.2.5-.4l.4-2.6c.6-.3 1.2-.6 1.7-1l2.4 1c.2.1.5 0 .6-.2l1.9-3.3a.5.5 0 0 0-.1-.6L19.4 13ZM12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Z"/></svg>
+    </button>
+  </header>
+
+  <p id="status" class="status" role="status">Reading the current page…</p>
+
+  <div class="field-row">
+    <label class="field">
+      <span>Issue key</span>
+      <input id="issue-key" type="text" spellcheck="false" autocomplete="off" placeholder="PROJ-123">
+    </label>
+    <label class="field">
+      <span class="label-line">Type prefix <span id="detected-type" class="counter"></span></span>
+      <select id="prefix" class="mono"></select>
+    </label>
+  </div>
+
+  <label class="field">
+    <span>Title</span>
+    <textarea id="issue-title" rows="2" placeholder="Issue summary"></textarea>
+  </label>
+
+  <div id="translation" class="translation" hidden>
+    <p id="translation-text"></p>
+    <div class="translation-actions">
+      <button id="translate" type="button">Translate</button>
+      <button id="show-original" class="link" type="button">Use original</button>
+    </div>
+  </div>
+
+  <label class="field">
+    <span class="label-line">Branch <span id="length" class="counter"></span></span>
+    <input id="branch" class="mono" type="text" spellcheck="false" autocomplete="off">
+  </label>
+
+  <div class="actions">
+    <button id="copy-branch" class="primary" type="button">Copy branch name</button>
+    <button id="copy-command" type="button" title="Copies: git checkout -b &lt;branch&gt;">Copy checkout command</button>
+  </div>
+
+  <p id="feedback" class="feedback" aria-live="polite"></p>
+</body>
+</html>

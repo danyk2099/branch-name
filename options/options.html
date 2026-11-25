@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Branch Name – Settings</title>
+  <link rel="stylesheet" href="../styles/common.css">
+  <link rel="stylesheet" href="options.css">
+  <script type="module" src="options.js"></script>
+</head>
+<body>
+  <main>
+    <h1>Branch name settings</h1>
+
+    <form id="form" novalidate>
+      <section>
+        <h2>Issue type prefixes</h2>
+        <label class="check"><input id="useTypePrefix" name="useTypePrefix" type="checkbox"> Start the branch name with a prefix based on the Jira issue type</label>
+        <p class="hint">Type names are matched ignoring case, spaces and dashes, so <code>Sub-task</code> also matches <code>Subtask</code>. If your Jira uses other names (for example Hebrew ones such as <code>באג</code>), add them here too.</p>
+        <table class="rows">
+          <thead><tr><th>Jira issue type</th><th>Prefix</th><th><span class="visually-hidden">Remove</span></th></tr></thead>
+          <tbody id="types-body"></tbody>
+        </table>
+        <button id="add-type" type="button" class="add-row">Add issue type</button>
+
+        <label class="field">
+          <span>Prefix for other types</span>
+          <input id="prefix" name="prefix" type="text" class="mono" placeholder="e.g. feature/ (leave empty for none)" spellcheck="false">
+          <small>Used when the type is unknown, not in the table above, or type prefixes are turned off. If a prefix ends in a letter, the separator is added after it. You can always pick a different prefix in the popup.</small>
+        </label>
+      </section>
+
+      <section>
+        <h2>Translation</h2>
+        <p class="hint">Titles containing non-Latin letters (Hebrew, Russian, Arabic…) are translated to English before the branch name is built.</p>
+        <div class="grid">
+          <label class="field">
+            <span>Translate with</span>
+            <select id="translateProvider" name="translateProvider"></select>
+          </label>
+          <label class="field">
+            <span>Titles are written in</span>
+            <select id="sourceLanguage" name="sourceLanguage">
+              <option value="he">Hebrew</option>
+              <option value="ar">Arabic</option>
+              <option value="ru">Russian</option>
+              <option value="uk">Ukrainian</option>
+              <option value="el">Greek</option>
+              <option value="zh">Chinese</option>
+              <option value="ja">Japanese</option>
+              <option value="ko">Korean</option>
+              <option value="hi">Hindi</option>
+              <option value="th">Thai</option>
+            </select>
+          </label>
+        </div>
+
+        <div id="builtin-panel" class="provider-panel">
+          <p class="hint">Runs on your computer with the browser's own translation model, so titles never leave your machine. It needs Chrome 138 or newer, and the model is downloaded once per language.</p>
+          <div class="inline">
+            <button id="download-model" type="button">Download model</button>
+            <span id="builtin-status" class="hint"></span>
+          </div>
+        </div>
+
+        <div id="cloud-panel" class="provider-panel">
+          <div class="grid">
+            <label class="field">
+              <span>API key</span>
+              <input id="apiKey" type="password" class="mono" autocomplete="off" spellcheck="false">
+              <small>Stored only on this computer, never synced.</small>
+            </label>
+            <label id="azure-region-field" class="field">
+              <span>Azure region</span>
+              <input id="azureRegion" name="azureRegion" type="text" class="mono" placeholder="e.g. westeurope" spellcheck="false">
+              <small>Leave empty for a global resource.</small>
+            </label>
+          </div>
+          <p class="hint">Issue titles are sent to this service. Check that your company allows that. When you save, the browser asks for permission to contact it.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2>Format</h2>
+        <div class="grid">
+          <label class="field">
+            <span>Separator</span>
+            <input id="separator" name="separator" type="text" class="mono" maxlength="2" spellcheck="false">
+            <small>One character, used between words.</small>
+          </label>
+          <label class="field">
+            <span>Maximum length</span>
+            <input id="maxLength" name="maxLength" type="number" min="10" max="255" step="1">
+            <small>Applies to the whole name, prefix included. Long titles are cut at a word boundary.</small>
+          </label>
+        </div>
+
+        <label class="check"><input id="includeIssueKey" name="includeIssueKey" type="checkbox"> Include the issue key (PROJ-123)</label>
+        <label class="check"><input id="lowercaseKey" name="lowercaseKey" type="checkbox"> Lowercase the issue key</label>
+        <label class="check"><input id="lowercaseTitle" name="lowercaseTitle" type="checkbox"> Lowercase the title</label>
+        <label class="check"><input id="asciiOnly" name="asciiOnly" type="checkbox"> ASCII only (é → e; letters still non-Latin after translation are dropped)</label>
+      </section>
+
+      <section>
+        <h2>Prohibited characters</h2>
+        <label class="field">
+          <span>Characters</span>
+          <input id="prohibitedChars" name="prohibitedChars" type="text" class="mono" spellcheck="false">
+          <small>Every character in this box is prohibited. Spaces are always turned into the separator, and the characters git never allows (<code>~ ^ : ? * [ \</code>) are always removed.</small>
+        </label>
+        <div id="prohibited-chips" class="chips" aria-hidden="true"></div>
+
+        <fieldset class="radio-group">
+          <legend>When a prohibited character appears</legend>
+          <label class="check"><input type="radio" name="prohibitedMode" value="replace"> Replace it with the separator (<code>a&amp;b</code> → <code>a-b</code>)</label>
+          <label class="check"><input type="radio" name="prohibitedMode" value="remove"> Remove it (<code>a&amp;b</code> → <code>ab</code>)</label>
+          <small>Quotes are always removed, so <code>user's</code> becomes <code>users</code>.</small>
+        </fieldset>
+      </section>
+
+      <section>
+        <h2>Limited characters</h2>
+        <p class="hint">Characters that are allowed, but only a set number of times in the whole branch name, prefix included. Occurrences after the limit become the separator. For example, <code>/</code> limited to 1 keeps the slash in <code>bugfix/</code> and turns <code>login/logout</code> into <code>login-logout</code>.</p>
+        <table class="rows">
+          <thead><tr><th>Character</th><th>Max occurrences</th><th><span class="visually-hidden">Remove</span></th></tr></thead>
+          <tbody id="limits-body"></tbody>
+        </table>
+        <button id="add-limit" type="button" class="add-row">Add character</button>
+      </section>
+
+      <section>
+        <h2>Popup</h2>
+        <label class="check"><input id="autoCopy" name="autoCopy" type="checkbox"> Copy the branch name automatically when the popup opens</label>
+      </section>
+
+      <section class="preview">
+        <h2>Preview</h2>
+        <div class="grid preview-grid">
+          <label class="field"><span>Sample key</span><input id="sample-key" type="text" value="PROJ-1234"></label>
+          <label class="field"><span>Sample type</span><input id="sample-type" type="text" value="Bug"></label>
+          <label class="field"><span>Sample title</span><input id="sample-title" type="text" value="Fix login/logout redirect when user's session expires (SSO &amp; 2FA)"></label>
+        </div>
+        <div class="inline">
+          <button id="translate-sample" type="button">Translate sample title</button>
+          <span id="sample-translation" class="hint"></span>
+        </div>
+        <output id="preview" class="mono"></output>
+        <ul id="warnings" class="warnings"></ul>
+      </section>
+
+      <div class="footer">
+        <button id="reset" type="button">Restore defaults</button>
+        <span id="saved" class="saved" aria-live="polite"></span>
+        <button class="primary" type="submit">Save</button>
+      </div>
+    </form>
+  </main>
+
+  <template id="type-row">
+    <tr>
+      <td><input class="type-name" type="text" aria-label="Jira issue type" spellcheck="false"></td>
+      <td><input class="type-prefix mono" type="text" aria-label="Prefix" spellcheck="false"></td>
+      <td><button class="remove-row" type="button">Remove</button></td>
+    </tr>
+  </template>
+
+  <template id="limit-row">
+    <tr>
+      <td><input class="limit-char mono" type="text" maxlength="2" aria-label="Character" spellcheck="false"></td>
+      <td><input class="limit-max" type="number" min="0" step="1" value="1" aria-label="Maximum occurrences"></td>
+      <td><button class="remove-row" type="button">Remove</button></td>
+    </tr>
+  </template>
+</body>
+</html>
